@@ -25,3 +25,5 @@ notes.db
 *.njsproj
 *.sln
 *.sw?
+
+.next/
