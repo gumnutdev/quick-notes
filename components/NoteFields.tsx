@@ -51,7 +51,7 @@ const moodEmojis = ["😢", "😟", "😐", "🙂", "😊", "😃", "😄", "�
 export const Mood = ({ scope, name, value, onChange }: MoodProps) => {
   return (
     <div className="space-y-3">
-      <Label className="text-sm font-medium text-slate-300">Mood</Label>
+      <Label className="text-sm font-medium text-slate-300">Mood </Label>
       <GumnutFocus control={scope.control} name={name} />
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -95,7 +95,7 @@ interface PriorityProps {
 export const Priority = ({ scope, name, value, onChange }: PriorityProps) => {
   return (
     <div className="space-y-2">
-      <Label className="text-sm font-medium text-slate-300">Priority</Label>
+      <Label className="text-sm font-medium text-slate-300">Priority </Label>
       <GumnutFocus control={scope.control} name={name} />
       <GumnutData
         control={scope.control}
@@ -140,7 +140,7 @@ interface CategoryProps {
 export const Category = ({ scope, name, value, onChange }: CategoryProps) => {
   return (
     <div className="space-y-2">
-      <Label className="text-sm font-medium text-slate-300">Category</Label>
+      <Label className="text-sm font-medium text-slate-300">Category </Label>
       <GumnutFocus control={scope.control} name={name} />
       <div>
         <GumnutText
@@ -174,7 +174,7 @@ interface StatusProps {
 export const Status = ({ scope, name, value, onChange }: StatusProps) => {
   return (
     <div className="space-y-2">
-      <Label className="text-sm font-medium text-slate-300">Status</Label>
+      <Label className="text-sm font-medium text-slate-300">Status </Label>
       <GumnutFocus control={scope.control} name={name} />
       <GumnutData
         control={scope.control}
