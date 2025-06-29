@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Save, Check, AlertCircle } from "lucide-react";
 import { useSaveNote } from "@/hooks/use-notes-api";
 import { toast } from "sonner";
+import { useGumnutDoc, buildTestToken, GumnutText } from "@gumnutdev/react";
 
 interface NoteEditorProps {
   note: Note;
@@ -29,6 +30,17 @@ export const NoteEditor = ({
   const [localNote, setLocalNote] = useState<Note>(note);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const saveNoteMutation = useSaveNote();
+
+  const getToken = () =>
+    buildTestToken(undefined, {
+      name: "Owen Brasier",
+      email: "owen@gumnut.dev",
+      picture: "https://gumnut.dev/assets/flag-64-D70dGnzm.png",
+    });
+  const scope = useGumnutDoc({
+    getToken,
+    docId: `${note.id}-doc`,
+  });
 
   useEffect(() => {
     setLocalNote(note);
@@ -63,11 +75,22 @@ export const NoteEditor = ({
       {/* Header */}
       <div className="p-6 border-b border-slate-700/50 bg-slate-800/30">
         <div className="flex items-center justify-between">
-          <Input
-            value={localNote.title}
-            onChange={(e) => handleUpdate({ title: e.target.value })}
-            className="text-2xl font-bold bg-transparent border-none p-0 text-white placeholder-slate-400 focus:ring-0 focus:border-none flex-1 mr-4"
+          <GumnutText
+            control={scope.control}
+            name="title"
+            defaultValue={localNote.title}
             placeholder="Note title..."
+            style={{
+              fontSize: "1.5rem",
+              fontWeight: "bold",
+              backgroundColor: "transparent",
+              border: "none",
+              padding: "0",
+              color: "white",
+              outline: "none",
+              flex: "1",
+              marginRight: "1rem",
+            }}
           />
           <Button
             onClick={handleSave}
@@ -100,11 +123,27 @@ export const NoteEditor = ({
       <div className="flex-1 flex overflow-hidden">
         {/* Main Content */}
         <div className="flex-1 p-6 overflow-y-auto">
-          <Textarea
-            value={localNote.content}
-            onChange={(e) => handleUpdate({ content: e.target.value })}
+          <GumnutText
+            control={scope.control}
+            name="content"
+            multiline
+            rows={10}
+            resize={false}
+            defaultValue={localNote.content}
             placeholder="Start writing your note..."
-            className="min-h-[400px] bg-transparent border-none p-0 text-white placeholder-slate-400 resize-none focus:ring-0 focus:border-none"
+            style={{
+              width: "100%",
+              minHeight: "400px",
+              backgroundColor: "transparent",
+              border: "0.5px solid",
+              borderRadius: "8px",
+              padding: "0",
+              color: "white",
+              resize: "none",
+              outline: "none",
+              fontFamily: "inherit",
+              fontSize: "inherit",
+            }}
           />
         </div>
 
