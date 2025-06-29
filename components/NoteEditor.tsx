@@ -93,6 +93,7 @@ export const NoteEditor = ({
       {/* Header */}
       <div className="p-6 border-b border-slate-700/50 bg-slate-800/30">
         <div className="flex items-center justify-between">
+          <GumnutFocus control={scope.control} name="title" />
           <GumnutText
             control={scope.control}
             name="title"
@@ -161,7 +162,7 @@ export const NoteEditor = ({
             placeholder="Start writing your note..."
             style={{
               width: "100%",
-              minHeight: "400px",
+              height: "100%",
               backgroundColor: "transparent",
               border: "0.5px solid",
               borderRadius: "8px",

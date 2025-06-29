@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Link } from "lucide-react";
-import { GumnutData, GumnutText } from "@gumnutdev/react";
+import { GumnutData, GumnutText, GumnutFocus } from "@gumnutdev/react";
 import {
   Select,
   SelectContent,
@@ -52,6 +52,7 @@ export const Mood = ({ scope, name, value, onChange }: MoodProps) => {
   return (
     <div className="space-y-3">
       <Label className="text-sm font-medium text-slate-300">Mood</Label>
+      <GumnutFocus control={scope.control} name={name} />
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-2xl">
@@ -95,6 +96,7 @@ export const Priority = ({ scope, name, value, onChange }: PriorityProps) => {
   return (
     <div className="space-y-2">
       <Label className="text-sm font-medium text-slate-300">Priority</Label>
+      <GumnutFocus control={scope.control} name={name} />
       <GumnutData
         control={scope.control}
         name={name}
@@ -139,6 +141,7 @@ export const Category = ({ scope, name, value, onChange }: CategoryProps) => {
   return (
     <div className="space-y-2">
       <Label className="text-sm font-medium text-slate-300">Category</Label>
+      <GumnutFocus control={scope.control} name={name} />
       <div>
         <GumnutText
           control={scope.control}
@@ -172,6 +175,7 @@ export const Status = ({ scope, name, value, onChange }: StatusProps) => {
   return (
     <div className="space-y-2">
       <Label className="text-sm font-medium text-slate-300">Status</Label>
+      <GumnutFocus control={scope.control} name={name} />
       <GumnutData
         control={scope.control}
         name={name}
