@@ -14,7 +14,12 @@ import { Button } from "@/components/ui/button";
 import { Save, Check, AlertCircle } from "lucide-react";
 import { useSaveNote } from "@/hooks/use-notes-api";
 import { toast } from "sonner";
-import { useGumnutDoc, buildTestToken, GumnutText } from "@gumnutdev/react";
+import {
+  useGumnutDoc,
+  buildTestToken,
+  GumnutText,
+  GumnutFocus,
+} from "@gumnutdev/react";
 
 interface NoteEditorProps {
   note: Note;
@@ -49,6 +54,15 @@ export const NoteEditor = ({
     }
   }, [note, localNote.id]);
 
+  // Update Note object without triggering save state (for Gumnut sync)
+  const updateNoteObject = (updates: Partial<Note>) => {
+    const updatedNote = { ...localNote, ...updates, modifiedDate: new Date() };
+    setLocalNote(updatedNote);
+    setHasUnsavedChanges(true);
+    onNoteUpdate(updatedNote);
+  };
+
+  // Update Note object and mark as having unsaved changes (for user actions)
   const handleUpdate = (updates: Partial<Note>) => {
     const updatedNote = { ...localNote, ...updates, modifiedDate: new Date() };
     setLocalNote(updatedNote);
@@ -56,11 +70,15 @@ export const NoteEditor = ({
     onNoteUpdate(updatedNote);
   };
 
+  // Check if any Gumnut fields are dirty for save button state
+
   const handleSave = async () => {
     try {
-      await saveNoteMutation.mutateAsync(localNote);
-      setHasUnsavedChanges(false);
-      toast.success("Note saved successfully!");
+      scope.actions.commit(async () => {
+        await saveNoteMutation.mutateAsync(localNote);
+        setHasUnsavedChanges(false);
+        toast.success("Note saved successfully!");
+      });
     } catch (error) {
       toast.error("Failed to save note: " + (error as Error).message);
     }
@@ -90,6 +108,15 @@ export const NoteEditor = ({
               outline: "none",
               flex: "1",
               marginRight: "1rem",
+            }}
+            render={({ state, children }) => {
+              // Update the Note object when Gumnut field changes (without triggering save)
+              const currentValue =
+                scope.doc?.root().value("title")?.contents() || "";
+              if (currentValue !== localNote.title && currentValue !== "") {
+                updateNoteObject({ title: currentValue });
+              }
+              return children;
             }}
           />
           <Button
@@ -123,6 +150,7 @@ export const NoteEditor = ({
       <div className="flex-1 flex overflow-hidden">
         {/* Main Content */}
         <div className="flex-1 p-6 overflow-y-auto">
+          <GumnutFocus control={scope.control} name="content" />
           <GumnutText
             control={scope.control}
             name="content"
@@ -144,6 +172,15 @@ export const NoteEditor = ({
               fontFamily: "inherit",
               fontSize: "inherit",
             }}
+            render={({ state, children }) => {
+              // Update the Note object when Gumnut field changes (without triggering save)
+              const currentValue =
+                scope.doc?.root().value("content")?.contents() || "";
+              if (currentValue !== localNote.content && currentValue !== "") {
+                updateNoteObject({ content: currentValue });
+              }
+              return children;
+            }}
           />
         </div>
 
@@ -161,21 +198,29 @@ export const NoteEditor = ({
               />
 
               <Mood
+                scope={scope}
+                name="mood"
                 value={localNote.mood}
                 onChange={(mood) => handleUpdate({ mood })}
               />
 
               <Priority
+                scope={scope}
+                name="priority"
                 value={localNote.priority}
                 onChange={(priority) => handleUpdate({ priority })}
               />
 
               <Category
+                scope={scope}
+                name="category"
                 value={localNote.category}
                 onChange={(category) => handleUpdate({ category })}
               />
 
               <Status
+                scope={scope}
+                name="status"
                 value={localNote.status}
                 onChange={(status) => handleUpdate({ status })}
               />
