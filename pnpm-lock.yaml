@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@gumnutdev/react':
+        specifier: ^0.4.2
+        version: 0.4.2(react@19.1.0)
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.10.0(react-hook-form@7.58.1(react@19.1.0))
@@ -615,6 +618,14 @@ packages:
 
   '@gar/promisify@1.1.3':
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
+
+  '@gumnutdev/api@0.4.2':
+    resolution: {integrity: sha512-/u5TK1JcaTdt++KVb8R4+oWpGIBrsDeQTfUnhP5JkUwaUDGUBVtTz9b0GqMkrxhxlHRKcXXFxU8xCXcBibYRug==}
+
+  '@gumnutdev/react@0.4.2':
+    resolution: {integrity: sha512-9c00aSRzGbLLZl6TQrvvaxYGAdmqre7KdHaOZnZ4iYxZSDktV1P5TKbVXye4vSCZLLtr2cRBu94eo/LEX6gwlw==}
+    peerDependencies:
+      react: ^19.0.0
 
   '@hookform/resolvers@3.10.0':
     resolution: {integrity: sha512-79Dv+3mDF7i+2ajj7SkypSKHhl1cbln1OGavqrsF7p6mbUv11xpqpacPsGDCTRvCSjEEIez2ef1NveSVL3b0Ag==}
@@ -3885,6 +3896,13 @@ snapshots:
 
   '@gar/promisify@1.1.3':
     optional: true
+
+  '@gumnutdev/api@0.4.2': {}
+
+  '@gumnutdev/react@0.4.2(react@19.1.0)':
+    dependencies:
+      '@gumnutdev/api': 0.4.2
+      react: 19.1.0
 
   '@hookform/resolvers@3.10.0(react-hook-form@7.58.1(react@19.1.0))':
     dependencies:
