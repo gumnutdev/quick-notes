@@ -6,19 +6,15 @@ import { NoteEditor } from "@/components/NoteEditor";
 import { SearchBar } from "@/components/SearchBar";
 import { MindMapView } from "@/components/MindMapView";
 import { Note } from "@/types/Note";
-import { PlusCircle, Grid, Map, Database, HardDrive } from "lucide-react";
+import { PlusCircle, Grid, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNotes, useSaveNote } from "@/hooks/use-notes-api";
 import { toast } from "sonner";
 
 export default function Home() {
-  const [localNotes, setLocalNotes] = useState<Note[]>([]);
   const [activeNote, setActiveNote] = useState<Note | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "mindmap">("list");
-  const [dataSource, setDataSource] = useState<"local" | "database">(
-    "database"
-  );
   const [isHydrated, setIsHydrated] = useState(false);
 
   const { data: databaseNotes, isLoading, error, refetch } = useNotes();
@@ -29,47 +25,15 @@ export default function Home() {
     setIsHydrated(true);
   }, []);
 
-  // Choose data source
-  const notes = dataSource === "database" ? databaseNotes || [] : localNotes;
-
-  // Load notes from localStorage on mount (fallback)
-  useEffect(() => {
-    if (!isHydrated) return; // Prevent SSR issues
-
-    const savedNotes = localStorage.getItem("notes");
-    if (savedNotes) {
-      const parsedNotes = JSON.parse(savedNotes).map((note: any) => ({
-        ...note,
-        createdDate: new Date(note.createdDate),
-        modifiedDate: new Date(note.modifiedDate),
-      }));
-      setLocalNotes(parsedNotes);
-      if (dataSource === "local" && parsedNotes.length > 0 && !activeNote) {
-        setActiveNote(parsedNotes[0]);
-      }
-    }
-  }, [dataSource, activeNote, isHydrated]);
+  // Always use database notes
+  const notes = databaseNotes || [];
 
   // Set active note when database notes load
   useEffect(() => {
-    if (
-      dataSource === "database" &&
-      databaseNotes &&
-      databaseNotes.length > 0 &&
-      !activeNote
-    ) {
+    if (databaseNotes && databaseNotes.length > 0 && !activeNote) {
       setActiveNote(databaseNotes[0]);
     }
-  }, [databaseNotes, dataSource, activeNote]);
-
-  // Save local notes to localStorage whenever they change
-  useEffect(() => {
-    if (!isHydrated) return; // Prevent SSR issues
-
-    if (dataSource === "local") {
-      localStorage.setItem("notes", JSON.stringify(localNotes));
-    }
-  }, [localNotes, dataSource, isHydrated]);
+  }, [databaseNotes, activeNote]);
 
   const createNewNote = async () => {
     const newNote: Note = {
@@ -85,73 +49,39 @@ export default function Home() {
       linkedNotes: [],
     };
 
-    if (dataSource === "database") {
-      try {
-        await saveNoteMutation.mutateAsync(newNote);
-        setActiveNote(newNote);
-        toast.success("New note created!");
-      } catch (error) {
-        toast.error("Failed to create note: " + (error as Error).message);
-      }
-    } else {
-      setLocalNotes((prev: Note[]) => [newNote, ...prev]);
+    try {
+      await saveNoteMutation.mutateAsync(newNote);
       setActiveNote(newNote);
+      toast.success("New note created!");
+    } catch (error) {
+      toast.error("Failed to create note: " + (error as Error).message);
     }
   };
 
   const updateNote = async (updatedNote: Note) => {
-    if (dataSource === "database") {
-      // Save to database and update local state
-      try {
-        await saveNoteMutation.mutateAsync(updatedNote);
-        setActiveNote(updatedNote);
-        // The query will automatically refetch and update the notes list
-      } catch (error) {
-        toast.error("Failed to save note: " + (error as Error).message);
-      }
-    } else {
-      setLocalNotes((prev: Note[]) =>
-        prev.map((note: Note) =>
-          note.id === updatedNote.id
-            ? { ...updatedNote, modifiedDate: new Date() }
-            : note
-        )
-      );
+    try {
+      await saveNoteMutation.mutateAsync(updatedNote);
       setActiveNote(updatedNote);
+      // The query will automatically refetch and update the notes list
+    } catch (error) {
+      toast.error("Failed to save note: " + (error as Error).message);
     }
   };
 
   const deleteNote = async (noteId: string) => {
-    if (dataSource === "database") {
-      try {
-        const response = await fetch(`/api/notes/${noteId}`, {
-          method: "DELETE",
-        });
-        if (!response.ok) throw new Error("Failed to delete note");
+    try {
+      const response = await fetch(`/api/notes/${noteId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete note");
 
-        const remainingNotes = notes.filter((note: Note) => note.id !== noteId);
-        setActiveNote(remainingNotes.length > 0 ? remainingNotes[0] : null);
-        refetch(); // Refresh the notes list
-        toast.success("Note deleted!");
-      } catch (error) {
-        toast.error("Failed to delete note: " + (error as Error).message);
-      }
-    } else {
-      setLocalNotes((prev: Note[]) =>
-        prev.filter((note: Note) => note.id !== noteId)
-      );
-      if (activeNote?.id === noteId) {
-        const remainingNotes = localNotes.filter(
-          (note: Note) => note.id !== noteId
-        );
-        setActiveNote(remainingNotes.length > 0 ? remainingNotes[0] : null);
-      }
+      const remainingNotes = notes.filter((note: Note) => note.id !== noteId);
+      setActiveNote(remainingNotes.length > 0 ? remainingNotes[0] : null);
+      refetch(); // Refresh the notes list
+      toast.success("Note deleted!");
+    } catch (error) {
+      toast.error("Failed to delete note: " + (error as Error).message);
     }
-  };
-
-  const toggleDataSource = () => {
-    setDataSource((prev) => (prev === "database" ? "local" : "database"));
-    setActiveNote(null); // Reset active note when switching
   };
 
   const filteredNotes = notes.filter(
@@ -180,22 +110,7 @@ export default function Home() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <h1 className="text-xl font-bold text-white">NotesVault</h1>
-                  <Button
-                    onClick={toggleDataSource}
-                    size="sm"
-                    variant="outline"
-                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                    title={`Switch to ${
-                      dataSource === "database" ? "Local Storage" : "Database"
-                    }`}
-                  >
-                    {dataSource === "database" ? (
-                      <Database className="w-4 h-4" />
-                    ) : (
-                      <HardDrive className="w-4 h-4" />
-                    )}
-                  </Button>
-                  {isLoading && dataSource === "database" && (
+                  {isLoading && (
                     <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
                   )}
                 </div>
@@ -226,17 +141,11 @@ export default function Home() {
                 searchTerm={searchTerm}
                 onSearchChange={setSearchTerm}
               />
-              <div className="mt-2 text-xs text-slate-400 flex items-center justify-between">
-                <span>
-                  Source:{" "}
-                  {dataSource === "database"
-                    ? "SQLite Database"
-                    : "Local Storage"}
-                </span>
-                {error && dataSource === "database" && (
-                  <span className="text-red-400">⚠ Database Error</span>
-                )}
-              </div>
+              {error && (
+                <div className="mt-2 text-xs text-red-400">
+                  ⚠ Database connection error
+                </div>
+              )}
             </div>
 
             <Sidebar
@@ -293,21 +202,6 @@ export default function Home() {
                 List View
               </Button>
               <h1 className="text-xl font-bold text-white">Mind Map</h1>
-              <Button
-                onClick={toggleDataSource}
-                size="sm"
-                variant="outline"
-                className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                title={`Switch to ${
-                  dataSource === "database" ? "Local Storage" : "Database"
-                }`}
-              >
-                {dataSource === "database" ? (
-                  <Database className="w-4 h-4" />
-                ) : (
-                  <HardDrive className="w-4 h-4" />
-                )}
-              </Button>
             </div>
             <Button
               onClick={createNewNote}
