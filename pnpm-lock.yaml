@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@gumnutdev/react':
-        specifier: ^0.4.2
-        version: 0.4.2(react@19.1.0)
+        specifier: ^0.4.5
+        version: 0.4.5(react@19.1.0)
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.10.0(react-hook-form@7.58.1(react@19.1.0))
@@ -622,11 +622,11 @@ packages:
   '@gar/promisify@1.1.3':
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
 
-  '@gumnutdev/api@0.4.2':
-    resolution: {integrity: sha512-/u5TK1JcaTdt++KVb8R4+oWpGIBrsDeQTfUnhP5JkUwaUDGUBVtTz9b0GqMkrxhxlHRKcXXFxU8xCXcBibYRug==}
+  '@gumnutdev/api@0.4.6':
+    resolution: {integrity: sha512-MomO2oQw08o2sBfwZ0e0+gFSaiFcmP7/BFjsmuWFu0CtKgP5CTud0Gn3HeOt+MKtPreXai4can+yUekHlsKNGg==}
 
-  '@gumnutdev/react@0.4.2':
-    resolution: {integrity: sha512-9c00aSRzGbLLZl6TQrvvaxYGAdmqre7KdHaOZnZ4iYxZSDktV1P5TKbVXye4vSCZLLtr2cRBu94eo/LEX6gwlw==}
+  '@gumnutdev/react@0.4.5':
+    resolution: {integrity: sha512-Q7+i65qxVvjCkakLkUAVTRTuxHT9EQmtKbm3MuVAE2T9wfylHbBUdmpV74BAKNBM/Ke2+ayC0/Z3aTqKHycU8g==}
     peerDependencies:
       react: ^19.0.0
 
@@ -3905,11 +3905,11 @@ snapshots:
   '@gar/promisify@1.1.3':
     optional: true
 
-  '@gumnutdev/api@0.4.2': {}
+  '@gumnutdev/api@0.4.6': {}
 
-  '@gumnutdev/react@0.4.2(react@19.1.0)':
+  '@gumnutdev/react@0.4.5(react@19.1.0)':
     dependencies:
-      '@gumnutdev/api': 0.4.2
+      '@gumnutdev/api': 0.4.6
       react: 19.1.0
 
   '@hookform/resolvers@3.10.0(react-hook-form@7.58.1(react@19.1.0))':

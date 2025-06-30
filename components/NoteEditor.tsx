@@ -54,6 +54,20 @@ export const NoteEditor = ({
     }
   }, [note, localNote.id]);
 
+  useEffect(() => {
+    const c = new AbortController();
+
+    scope.doc.addListener(
+      "agentAction",
+      (m) => {
+        toast(`Agent ${m.name}: ${m.message}`);
+      },
+      c.signal
+    );
+
+    return () => c.abort();
+  });
+
   // Update Note object without triggering save state (for Gumnut sync)
   const updateNoteObject = (updates: Partial<Note>) => {
     const updatedNote = { ...localNote, ...updates, modifiedDate: new Date() };
@@ -191,7 +205,6 @@ export const NoteEditor = ({
             <h3 className="text-lg font-semibold text-white mb-4">
               Note Properties
             </h3>
-
             <div className="space-y-4">
               <Calendar
                 createdDate={localNote.createdDate}
