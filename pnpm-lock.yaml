@@ -182,6 +182,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.17)
+      threewords:
+        specifier: ^0.0.1
+        version: 0.0.1
       vaul:
         specifier: ^0.9.3
         version: 0.9.9(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -3451,6 +3454,11 @@ packages:
 
   thenify@3.3.1:
     resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
+
+  threewords@0.0.1:
+    resolution: {integrity: sha512-ueEm2UnbkueDU8cf/VybAxF1C8NBpjxFzzOB3F/q6x5K+u01HtQ90nJNsrcoL81tYlXnwixHU0uuJGm0gE0TMg==}
+    engines: {node: '>=6.0.0'}
+    hasBin: true
 
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
@@ -6945,6 +6953,8 @@ snapshots:
   thenify@3.3.1:
     dependencies:
       any-promise: 1.3.0
+
+  threewords@0.0.1: {}
 
   tiny-invariant@1.3.3: {}
 

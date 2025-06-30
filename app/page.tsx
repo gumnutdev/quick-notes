@@ -10,6 +10,7 @@ import { PlusCircle, Grid, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNotes, useSaveNote } from "@/hooks/use-notes-api";
 import { toast } from "sonner";
+import threewords from "threewords";
 
 export default function Home() {
   const [activeNote, setActiveNote] = useState<Note | null>(null);
@@ -37,7 +38,7 @@ export default function Home() {
 
   const createNewNote = async () => {
     const newNote: Note = {
-      id: crypto.randomUUID(),
+      id: threewords.random(),
       title: "Untitled Note",
       content: "",
       createdDate: new Date(),
