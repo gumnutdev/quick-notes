@@ -54,15 +54,15 @@ export const Mood = ({ scope, name, value, onChange }: MoodProps) => {
     <div className="space-y-3">
       <Label className="text-sm font-medium text-slate-300">Mood </Label>
       <GumnutFocus control={scope.control} name={name} />
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-2xl">{moodEmojis[value - 1]}</span>
-          <span className="text-sm text-slate-400">{value}/10</span>
-        </div>
-        <GumnutData
-          control={scope.control}
-          name={name}
-          render={({ field }) => (
+      <GumnutData
+        control={scope.control}
+        name={name}
+        render={({ field }) => (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-2xl">{moodEmojis[+field.value - 1]}</span>
+              <span className="text-sm text-slate-400">{field.value}/10</span>
+            </div>
             <input
               type="range"
               min="1"
@@ -75,9 +75,9 @@ export const Mood = ({ scope, name, value, onChange }: MoodProps) => {
               }}
               className="w-full"
             />
-          )}
-        />
-      </div>
+          </div>
+        )}
+      />
     </div>
   );
 };
