@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@gumnutdev/react':
-        specifier: ^0.4.5
-        version: 0.4.5(react@19.1.0)
+        specifier: ^0.4.6
+        version: 0.4.6(react@19.1.0)
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.10.0(react-hook-form@7.58.1(react@19.1.0))
@@ -625,8 +625,8 @@ packages:
   '@gumnutdev/api@0.4.6':
     resolution: {integrity: sha512-MomO2oQw08o2sBfwZ0e0+gFSaiFcmP7/BFjsmuWFu0CtKgP5CTud0Gn3HeOt+MKtPreXai4can+yUekHlsKNGg==}
 
-  '@gumnutdev/react@0.4.5':
-    resolution: {integrity: sha512-Q7+i65qxVvjCkakLkUAVTRTuxHT9EQmtKbm3MuVAE2T9wfylHbBUdmpV74BAKNBM/Ke2+ayC0/Z3aTqKHycU8g==}
+  '@gumnutdev/react@0.4.6':
+    resolution: {integrity: sha512-hjeUfRCdhQXS3mUBnuzNF1bZ3CiJfi1RtQRtDdONP9/eXTDxHscqlBnKUlkka2LiU3E5zOUjc4NBdBBH8+Zh5g==}
     peerDependencies:
       react: ^19.0.0
 
@@ -3907,7 +3907,7 @@ snapshots:
 
   '@gumnutdev/api@0.4.6': {}
 
-  '@gumnutdev/react@0.4.5(react@19.1.0)':
+  '@gumnutdev/react@0.4.6(react@19.1.0)':
     dependencies:
       '@gumnutdev/api': 0.4.6
       react: 19.1.0
