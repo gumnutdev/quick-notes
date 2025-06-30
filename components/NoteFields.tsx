@@ -49,18 +49,15 @@ interface MoodProps {
 const moodEmojis = ["😢", "😟", "😐", "🙂", "😊", "😃", "😄", "😆", "🤩", "🥳"];
 
 export const Mood = ({ scope, name, value, onChange }: MoodProps) => {
+  const moodValue = scope.doc?.root().value(name)?.contents();
   return (
     <div className="space-y-3">
       <Label className="text-sm font-medium text-slate-300">Mood </Label>
       <GumnutFocus control={scope.control} name={name} />
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-2xl">
-            {moodEmojis[scope.doc?.root().value("mood")?.contents() - 1]}
-          </span>
-          <span className="text-sm text-slate-400">
-            {scope.doc?.root().value("mood")?.contents()}/10
-          </span>
+          <span className="text-2xl">{moodEmojis[value - 1]}</span>
+          <span className="text-sm text-slate-400">{value}/10</span>
         </div>
         <GumnutData
           control={scope.control}

@@ -14,6 +14,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "NotesVault - Your Personal Mind Garden",
   description: "A beautiful note-taking app with mind mapping capabilities",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
