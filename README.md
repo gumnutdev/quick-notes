@@ -132,3 +132,5 @@ This project was successfully migrated from Vite to Next.js 15. Key changes incl
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
+
+Made for our hackathon!
