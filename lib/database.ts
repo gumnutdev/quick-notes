@@ -1,66 +1,67 @@
-import sqlite3 from "sqlite3";
-import path from "path";
+import { join } from "path";
+import { Low } from "lowdb";
+import { JSONFile } from "lowdb/node";
 import { Note } from "@/types/Note";
-import { promisify } from "util";
 
-// Create database connection
-const dbPath = path.join(process.cwd(), "notes.db");
-const db = new sqlite3.Database(dbPath);
+// Database schema
+interface DatabaseSchema {
+  notes: Array<{
+    id: string;
+    title: string;
+    content: string;
+    created_date: string;
+    modified_date: string;
+    mood: number;
+    priority: string;
+    category: string;
+    status: string;
+  }>;
+  linked_notes: Array<{
+    note_id: string;
+    linked_note_id: string;
+  }>;
+}
 
-// Promisify database methods for async/await with proper typing
-const dbRun = promisify<string, any[], sqlite3.Statement>(db.run.bind(db));
-const dbGet = promisify<string, any[], any>(db.get.bind(db));
-const dbAll = promisify<string, any[], any[]>(db.all.bind(db));
+// Database instance
+let db: Low<DatabaseSchema> | null = null;
 
-// Initialize database schema
+// Initialize database
+async function initDatabase(): Promise<Low<DatabaseSchema>> {
+  if (db) return db;
+
+  // Database file path
+  const file = join(process.cwd(), "notes.json");
+
+  // Configure lowdb to write to JSON file
+  const adapter = new JSONFile<DatabaseSchema>(file);
+  db = new Low(adapter, { notes: [], linked_notes: [] });
+
+  // Read existing data from file
+  await db.read();
+
+  // If file doesn't exist, write default data
+  if (!db.data) {
+    db.data = { notes: [], linked_notes: [] };
+    await db.write();
+  }
+
+  return db;
+}
+
+// Initialize database schema (for compatibility)
 export async function initializeDatabase() {
-  // Create notes table if it doesn't exist
-  const createNotesTable = `
-    CREATE TABLE IF NOT EXISTS notes (
-      id TEXT PRIMARY KEY,
-      title TEXT NOT NULL,
-      content TEXT NOT NULL,
-      created_date DATETIME NOT NULL,
-      modified_date DATETIME NOT NULL,
-      mood INTEGER NOT NULL DEFAULT 5,
-      priority TEXT NOT NULL DEFAULT 'medium',
-      category TEXT NOT NULL DEFAULT '',
-      status TEXT NOT NULL DEFAULT 'draft'
-    )
-  `;
-
-  // Create linked_notes table for note relationships
-  const createLinkedNotesTable = `
-    CREATE TABLE IF NOT EXISTS linked_notes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      note_id TEXT NOT NULL,
-      linked_note_id TEXT NOT NULL,
-      FOREIGN KEY (note_id) REFERENCES notes (id) ON DELETE CASCADE,
-      FOREIGN KEY (linked_note_id) REFERENCES notes (id) ON DELETE CASCADE,
-      UNIQUE(note_id, linked_note_id)
-    )
-  `;
-
-  await dbRun(createNotesTable, []);
-  await dbRun(createLinkedNotesTable, []);
+  await initDatabase();
+  // No schema creation needed for lowdb - it's just JSON
 }
 
 // Database operations
 export const noteOperations = {
   // Get all notes with their linked notes
   getAllNotes: async (): Promise<Note[]> => {
-    const notesQuery = `
-      SELECT * FROM notes 
-      ORDER BY modified_date DESC
-    `;
+    const database = await initDatabase();
 
-    const linkedNotesQuery = `
-      SELECT note_id, linked_note_id 
-      FROM linked_notes
-    `;
-
-    const notes: any[] = await dbAll(notesQuery, []);
-    const linkedNotes: any[] = await dbAll(linkedNotesQuery, []);
+    const notes = database.data.notes;
+    const linkedNotes = database.data.linked_notes;
 
     // Group linked notes by note_id
     const linkedNotesMap = new Map<string, string[]>();
@@ -72,34 +73,34 @@ export const noteOperations = {
     });
 
     // Transform database results to Note objects
-    return notes.map((note) => ({
-      id: note.id,
-      title: note.title,
-      content: note.content,
-      createdDate: new Date(note.created_date),
-      modifiedDate: new Date(note.modified_date),
-      mood: note.mood,
-      priority: note.priority,
-      category: note.category,
-      status: note.status,
-      linkedNotes: linkedNotesMap.get(note.id) || [],
-    })) as Note[];
+    return notes
+      .map((note) => ({
+        id: note.id,
+        title: note.title,
+        content: note.content,
+        createdDate: new Date(note.created_date),
+        modifiedDate: new Date(note.modified_date),
+        mood: note.mood,
+        priority: note.priority,
+        category: note.category,
+        status: note.status,
+        linkedNotes: linkedNotesMap.get(note.id) || [],
+      }))
+      .sort(
+        (a, b) => b.modifiedDate.getTime() - a.modifiedDate.getTime()
+      ) as Note[];
   },
 
   // Get a single note by ID
   getNoteById: async (id: string): Promise<Note | null> => {
-    const noteQuery = `
-      SELECT * FROM notes WHERE id = ?
-    `;
+    const database = await initDatabase();
 
-    const linkedNotesQuery = `
-      SELECT linked_note_id FROM linked_notes WHERE note_id = ?
-    `;
-
-    const note: any = await dbGet(noteQuery, [id]);
+    const note = database.data.notes.find((n) => n.id === id);
     if (!note) return null;
 
-    const linkedNotes: any[] = await dbAll(linkedNotesQuery, [id]);
+    const linkedNotes = database.data.linked_notes
+      .filter((ln) => ln.note_id === id)
+      .map((ln) => ln.linked_note_id);
 
     return {
       id: note.id,
@@ -111,82 +112,73 @@ export const noteOperations = {
       priority: note.priority,
       category: note.category,
       status: note.status,
-      linkedNotes: linkedNotes.map((ln) => ln.linked_note_id),
+      linkedNotes,
     } as Note;
   },
 
   // Save or update a note
   saveNote: async (note: Note): Promise<void> => {
-    // Use a transaction-like approach with serialize
-    return new Promise((resolve, reject) => {
-      db.serialize(async () => {
-        try {
-          // Insert or update the note
-          const upsertNoteQuery = `
-            INSERT OR REPLACE INTO notes (
-              id, title, content, created_date, modified_date, 
-              mood, priority, category, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `;
+    const database = await initDatabase();
 
-          await dbRun(upsertNoteQuery, [
-            note.id,
-            note.title,
-            note.content,
-            note.createdDate.toISOString(),
-            note.modifiedDate.toISOString(),
-            note.mood,
-            note.priority,
-            note.category,
-            note.status,
-          ]);
+    // Remove existing note if it exists
+    const existingIndex = database.data.notes.findIndex(
+      (n) => n.id === note.id
+    );
+    if (existingIndex >= 0) {
+      database.data.notes.splice(existingIndex, 1);
+    }
 
-          // Delete existing linked notes for this note
-          await dbRun("DELETE FROM linked_notes WHERE note_id = ?", [note.id]);
-
-          // Insert new linked notes
-          if (note.linkedNotes && note.linkedNotes.length > 0) {
-            const insertLinkedNoteQuery = `
-              INSERT INTO linked_notes (note_id, linked_note_id) VALUES (?, ?)
-            `;
-
-            for (const linkedNoteId of note.linkedNotes) {
-              await dbRun(insertLinkedNoteQuery, [note.id, linkedNoteId]);
-            }
-          }
-
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      });
+    // Add the note
+    database.data.notes.push({
+      id: note.id,
+      title: note.title,
+      content: note.content,
+      created_date: note.createdDate.toISOString(),
+      modified_date: note.modifiedDate.toISOString(),
+      mood: note.mood,
+      priority: note.priority,
+      category: note.category,
+      status: note.status,
     });
+
+    // Remove existing linked notes for this note
+    database.data.linked_notes = database.data.linked_notes.filter(
+      (ln) => ln.note_id !== note.id
+    );
+
+    // Add new linked notes
+    if (note.linkedNotes && note.linkedNotes.length > 0) {
+      for (const linkedNoteId of note.linkedNotes) {
+        database.data.linked_notes.push({
+          note_id: note.id,
+          linked_note_id: linkedNoteId,
+        });
+      }
+    }
+
+    // Save to file
+    await database.write();
   },
 
   // Delete a note and its relationships
   deleteNote: async (id: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      db.serialize(async () => {
-        try {
-          // Delete linked notes relationships
-          await dbRun(
-            "DELETE FROM linked_notes WHERE note_id = ? OR linked_note_id = ?",
-            [id, id]
-          );
+    const database = await initDatabase();
 
-          // Delete the note
-          await dbRun("DELETE FROM notes WHERE id = ?", [id]);
+    // Remove the note
+    database.data.notes = database.data.notes.filter((n) => n.id !== id);
 
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      });
-    });
+    // Remove all linked note relationships
+    database.data.linked_notes = database.data.linked_notes.filter(
+      (ln) => ln.note_id !== id && ln.linked_note_id !== id
+    );
+
+    // Save to file
+    await database.write();
   },
 };
 
 // Initialize database on import
 initializeDatabase().catch(console.error);
 
-export default db;
+// Export for compatibility
+export default null;
