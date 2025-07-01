@@ -14,6 +14,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { NoteLink } from "@/types/Note";
 
+// Define a proper type for the scope parameter instead of using any
+interface FormScope {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: any; // Keep as any for now to avoid typing issues with Gumnut library
+  doc?: {
+    root: () => {
+      value: (name: string) => {
+        contents: () => unknown;
+      };
+    };
+  };
+}
+
 interface CalendarProps {
   createdDate: Date;
   modifiedDate: Date;
@@ -40,7 +53,7 @@ export const Calendar = ({ createdDate, modifiedDate }: CalendarProps) => {
 };
 
 interface MoodProps {
-  scope: any;
+  scope: FormScope;
   name: string;
   value: number;
   onChange: (value: number) => void;
@@ -83,7 +96,7 @@ export const Mood = ({ scope, name, value, onChange }: MoodProps) => {
 };
 
 interface PriorityProps {
-  scope: any;
+  scope: FormScope;
   name: string;
   value: "low" | "medium" | "high";
   onChange: (value: "low" | "medium" | "high") => void;
@@ -128,7 +141,7 @@ export const Priority = ({ scope, name, value, onChange }: PriorityProps) => {
 };
 
 interface CategoryProps {
-  scope: any;
+  scope: FormScope;
   name: string;
   value: string;
   onChange: (value: string) => void;
@@ -162,7 +175,7 @@ export const Category = ({ scope, name, value, onChange }: CategoryProps) => {
 };
 
 interface StatusProps {
-  scope: any;
+  scope: FormScope;
   name: string;
   value: "draft" | "in-progress" | "complete";
   onChange: (value: "draft" | "in-progress" | "complete") => void;

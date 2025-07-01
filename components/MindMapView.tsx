@@ -98,7 +98,7 @@ export const MindMapView = ({
     [notes, onNoteUpdate]
   );
 
-  const onNodeDragStop = useCallback((event: any, node: Node) => {
+  const onNodeDragStop = useCallback((event: React.MouseEvent, node: Node) => {
     // Update node position - in a real app you might want to persist this
     console.log(`Node ${node.id} moved to position:`, node.position);
   }, []);
