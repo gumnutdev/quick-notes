@@ -5,11 +5,12 @@ import { Note } from "@/types/Note";
 // GET /api/notes/[id] - Get a specific note
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log("Fetching note by ID:", params.id);
-    const note = await noteOperations.getNoteById(params.id);
+    const { id } = await params;
+    console.log("Fetching note by ID:", id);
+    const note = await noteOperations.getNoteById(id);
     console.log("Retrieved note:", note ? "Found" : "Not found");
 
     if (!note) {
@@ -29,13 +30,14 @@ export async function GET(
 // PUT /api/notes/[id] - Update a specific note
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const note: Note = await request.json();
 
     // Ensure the ID matches the URL parameter
-    if (note.id !== params.id) {
+    if (note.id !== id) {
       return NextResponse.json({ error: "Note ID mismatch" }, { status: 400 });
     }
 
@@ -66,16 +68,18 @@ export async function PUT(
 // DELETE /api/notes/[id] - Delete a specific note
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     // Check if note exists
-    const existingNote = noteOperations.getNoteById(params.id);
+    const existingNote = noteOperations.getNoteById(id);
     if (!existingNote) {
       return NextResponse.json({ error: "Note not found" }, { status: 404 });
     }
 
-    noteOperations.deleteNote(params.id);
+    noteOperations.deleteNote(id);
 
     return NextResponse.json({
       success: true,

@@ -94,6 +94,11 @@ export function useNotes() {
   return useQuery({
     queryKey: ["notes"],
     queryFn: api.getAllNotes,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnMount: "always", // Always refetch when component mounts
+    refetchOnWindowFocus: false,
+    retry: 1,
+    retryDelay: 1000,
   });
 }
 
