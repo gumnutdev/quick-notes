@@ -11,7 +11,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Save, Check, AlertCircle } from "lucide-react";
+import { Save, Check, AlertCircle, Menu, ArrowLeft } from "lucide-react";
 import { useSaveNote } from "@/hooks/use-notes-api";
 import { toast } from "sonner";
 import {
@@ -25,12 +25,14 @@ interface NoteEditorProps {
   note: Note;
   onNoteUpdate: (note: Note) => void;
   allNotes: Note[];
+  onMobileBack?: () => void;
 }
 
 export const NoteEditor = ({
   note,
   onNoteUpdate,
   allNotes,
+  onMobileBack,
 }: NoteEditorProps) => {
   const [localNote, setLocalNote] = useState<Note>(note);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -104,52 +106,71 @@ export const NoteEditor = ({
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Mobile Navigation - Only visible on mobile */}
+      {onMobileBack && (
+        <div className="md:hidden p-3 bg-slate-900/50 border-b border-slate-700/50 flex items-center">
+          <Button
+            onClick={onMobileBack}
+            variant="ghost"
+            size="sm"
+            className="text-slate-300 hover:text-white hover:bg-slate-700/50 p-2"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <span className="ml-2 text-sm text-slate-300">Back to Notes</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="p-6 border-b border-slate-700/50 bg-slate-800/30">
-        <div className="flex items-center justify-between">
-          <GumnutFocus control={scope.control} name="title" />
-          <GumnutText
-            control={scope.control}
-            name="title"
-            defaultValue={localNote.title}
-            placeholder="Note title..."
-            style={{
-              fontSize: "1.5rem",
-              fontWeight: "bold",
-              backgroundColor: "transparent",
-              border: "none",
-              padding: "0",
-              color: "white",
-              outline: "none",
-              flex: "1",
-              marginRight: "1rem",
-            }}
-            render={({ state, children }) => {
-              // Update the Note object when Gumnut field changes (without triggering save)
-              const currentValue =
-                scope.doc?.root().value("title")?.contents() || "";
-              if (currentValue !== localNote.title && currentValue !== "") {
-                updateNoteObject({ title: currentValue });
-              }
-              return children;
-            }}
-          />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <GumnutFocus control={scope.control} name="title" />
+            <GumnutText
+              control={scope.control}
+              name="title"
+              defaultValue={localNote.title}
+              placeholder="Note title..."
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                backgroundColor: "transparent",
+                border: "none",
+                padding: "0",
+                color: "white",
+                outline: "none",
+                width: "100%",
+                boxSizing: "border-box",
+              }}
+              render={({ state, children }) => {
+                // Update the Note object when Gumnut field changes (without triggering save)
+                const currentValue =
+                  scope.doc?.root().value("title")?.contents() || "";
+                if (currentValue !== localNote.title && currentValue !== "") {
+                  updateNoteObject({ title: currentValue });
+                }
+                return children;
+              }}
+            />
+          </div>
           <Button
             onClick={handleSave}
             disabled={!hasUnsavedChanges || saveNoteMutation.isPending}
-            className="bg-purple-600 hover:bg-purple-700 disabled:bg-slate-600 disabled:opacity-50"
+            className="bg-purple-600 hover:bg-purple-700 disabled:bg-slate-600 disabled:opacity-50 w-full sm:w-auto shrink-0"
           >
             {saveNoteMutation.isPending ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : hasUnsavedChanges ? (
               <>
                 <Save className="w-4 h-4 mr-2" />
-                Save Note
+                <span className="hidden sm:inline">Save Note</span>
+                <span className="sm:hidden">Save</span>
               </>
             ) : (
               <>
                 <Check className="w-4 h-4 mr-2" />
-                Saved
+                <span className="hidden sm:inline">Saved</span>
+                <span className="sm:hidden">Saved</span>
               </>
             )}
           </Button>
@@ -162,7 +183,7 @@ export const NoteEditor = ({
         )}
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Main Content */}
         <div className="flex-1 p-6 overflow-y-auto">
           <GumnutFocus control={scope.control} name="content" />
@@ -176,16 +197,17 @@ export const NoteEditor = ({
             placeholder="Start writing your note..."
             style={{
               width: "100%",
-              height: "100%",
+              minHeight: "300px",
               backgroundColor: "transparent",
               border: "0.5px solid",
               borderRadius: "8px",
-              padding: "0",
+              padding: "12px",
               color: "white",
               resize: "none",
               outline: "none",
               fontFamily: "inherit",
               fontSize: "inherit",
+              boxSizing: "border-box",
             }}
             render={({ state, children }) => {
               // Update the Note object when Gumnut field changes (without triggering save)
@@ -199,8 +221,8 @@ export const NoteEditor = ({
           />
         </div>
 
-        {/* Sidebar with fields */}
-        <div className="w-80 bg-slate-800/30 border-l border-slate-700/50 p-6 overflow-y-auto space-y-6">
+        {/* Note Properties - Mobile: below content, Desktop: sidebar */}
+        <div className="w-full md:w-80 bg-slate-800/30 border-t md:border-t-0 md:border-l border-slate-700/50 p-6 overflow-y-auto space-y-6">
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">
               Note Properties
