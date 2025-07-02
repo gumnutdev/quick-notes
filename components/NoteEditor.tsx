@@ -51,8 +51,7 @@ export const NoteEditor = ({
 
   const [uniqueUid] = useState<string>(threewords.random());
   const [uniqueName] = useState<string>(() => {
-    const r = threewords.random();
-    const parts = r.split('-');
+    const parts = uniqueUid.split('-');
     return parts.map((p) => p[0].toUpperCase() + p.slice(1)).join(' ');
   })
 
