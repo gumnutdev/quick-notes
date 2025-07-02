@@ -179,7 +179,6 @@ export const NoteEditor = ({
               }}
             />
           </div>
-          <div className="flex-1 min-w-0"></div>
           <Button
             onClick={handleSave}
             disabled={!hasUnsavedChanges || saveNoteMutation.isPending}
