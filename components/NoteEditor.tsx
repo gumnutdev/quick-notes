@@ -22,6 +22,7 @@ import {
   GumnutStatus,
 } from "@gumnutdev/react";
 import { GumnutTextProps } from "../../gumnut-react/dist/types/api/GumnutText";
+import threewords from "threewords";
 
 interface NoteEditorProps {
   note: Note;
@@ -48,9 +49,16 @@ export const NoteEditor = ({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const saveNoteMutation = useSaveNote();
 
+  const [uniqueUid] = useState<string>(threewords.random());
+  const [uniqueName] = useState<string>(() => {
+    const r = threewords.random();
+    const parts = r.split('-');
+    return parts.map((p) => p[0].toUpperCase() + p.slice(1)).join(' ');
+  })
+
   const getToken = () =>
-    buildTestToken(undefined, {
-      name: "Owen Brasier",
+    buildTestToken(uniqueUid, {
+      name: uniqueName,
       email: "owen@gumnut.dev",
       picture: "https://gumnut.dev/assets/flag-64-D70dGnzm.png",
     });
