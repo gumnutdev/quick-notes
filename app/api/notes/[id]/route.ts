@@ -72,10 +72,6 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-<<<<<<< HEAD
-=======
-
->>>>>>> bff796b (fixed mobile layout, fixed notes not loading, fixed too many api calls)
     // Check if note exists
     const existingNote = noteOperations.getNoteById(id);
     if (!existingNote) {

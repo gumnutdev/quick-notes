@@ -185,7 +185,7 @@ export const NoteEditor = ({
 
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Main Content */}
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex-1 p-6 overflow-y-auto flex flex-col">
           <GumnutFocus control={scope.control} name="content" />
           <GumnutText
             control={scope.control}
@@ -195,6 +195,7 @@ export const NoteEditor = ({
             resize={false}
             defaultValue={localNote.content}
             placeholder="Start writing your note..."
+            className="flex-1 md:min-h-0"
             style={{
               width: "100%",
               minHeight: "300px",
