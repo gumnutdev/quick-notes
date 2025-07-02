@@ -51,9 +51,9 @@ export const NoteEditor = ({
 
   const [uniqueUid] = useState<string>(threewords.random());
   const [uniqueName] = useState<string>(() => {
-    const parts = uniqueUid.split('-');
-    return parts.map((p) => p[0].toUpperCase() + p.slice(1)).join(' ');
-  })
+    const parts = uniqueUid.split("-");
+    return parts.map((p) => p[0].toUpperCase() + p.slice(1)).join(" ");
+  });
 
   const getToken = () =>
     buildTestToken(uniqueUid, {
@@ -106,7 +106,7 @@ export const NoteEditor = ({
     const updatedNote = { ...localNote, ...updates, modifiedDate: new Date() };
     setLocalNote(updatedNote);
     setHasUnsavedChanges(true);
-    onNoteUpdate(updatedNote);
+    // onNoteUpdate(updatedNote);
   };
 
   // Check if any Gumnut fields are dirty for save button state
@@ -179,6 +179,7 @@ export const NoteEditor = ({
               }}
             />
           </div>
+          <div className="flex-1 min-w-0"></div>
           <Button
             onClick={handleSave}
             disabled={!hasUnsavedChanges || saveNoteMutation.isPending}
