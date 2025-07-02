@@ -19,13 +19,23 @@ import {
   buildTestToken,
   GumnutText,
   GumnutFocus,
+  GumnutStatus,
 } from "@gumnutdev/react";
+import { GumnutTextProps } from "../../gumnut-react/dist/types/api/GumnutText";
 
 interface NoteEditorProps {
   note: Note;
   onNoteUpdate: (note: Note) => void;
   allNotes: Note[];
   onMobileBack?: () => void;
+}
+
+let isHidden = false;
+try {
+  const u = new URL(window.location.href);
+  isHidden = !u.searchParams.has("ai");
+} catch {
+  // server
 }
 
 export const NoteEditor = ({
@@ -72,10 +82,16 @@ export const NoteEditor = ({
 
   // Update Note object without triggering save state (for Gumnut sync)
   const updateNoteObject = (updates: Partial<Note>) => {
-    const updatedNote = { ...localNote, ...updates, modifiedDate: new Date() };
-    setLocalNote(updatedNote);
-    setHasUnsavedChanges(true);
-    onNoteUpdate(updatedNote);
+    Promise.resolve().then(() => {
+      const updatedNote = {
+        ...localNote,
+        ...updates,
+        modifiedDate: new Date(),
+      };
+      setLocalNote(updatedNote);
+      setHasUnsavedChanges(true);
+      onNoteUpdate(updatedNote);
+    });
   };
 
   // Update Note object and mark as having unsaved changes (for user actions)
@@ -153,6 +169,9 @@ export const NoteEditor = ({
               }}
             />
           </div>
+          <div className="flex-1 min-w-0">
+            <GumnutStatus />
+          </div>
           <Button
             onClick={handleSave}
             disabled={!hasUnsavedChanges || saveNoteMutation.isPending}
@@ -229,6 +248,40 @@ export const NoteEditor = ({
               Note Properties
             </h3>
             <div className="space-y-4">
+              <div hidden={isHidden}>
+                <Button
+                  onClick={() => {
+                    scope.doc.triggerAgent("OMdDJx40OmlgakWiB2BZpQ");
+                  }}
+                >
+                  Make Sassy
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    scope.doc.triggerAgent("UUsW_CZS3qWLw0Ehu6OlRQ");
+                  }}
+                >
+                  Professional
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    scope.doc.triggerAgent("Ke4IF8-boExlIYFx405O2g");
+                  }}
+                >
+                  Summarize Title
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    scope.doc.shutdownAgents();
+                  }}
+                >
+                  Shut Down
+                </Button>
+              </div>
+
               <Calendar
                 createdDate={localNote.createdDate}
                 modifiedDate={localNote.modifiedDate}
