@@ -161,7 +161,7 @@ export const NoteEditor = ({
                 fontSize: "1.5rem",
                 fontWeight: "bold",
                 backgroundColor: "transparent",
-                border: "none",
+                border: "0.5px solid",
                 padding: "0",
                 color: "white",
                 outline: "none",
