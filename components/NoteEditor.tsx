@@ -97,7 +97,7 @@ export const NoteEditor = ({
       };
       setLocalNote(updatedNote);
       setHasUnsavedChanges(true);
-      onNoteUpdate(updatedNote);
+//      onNoteUpdate(updatedNote);
     });
   };
 
