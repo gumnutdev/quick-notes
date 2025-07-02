@@ -146,6 +146,9 @@ export const NoteEditor = ({
 
       {/* Header */}
       <div className="p-6 border-b border-slate-700/50 bg-slate-800/30">
+        <div>
+          <GumnutStatus />
+        </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1 min-w-0">
             <GumnutFocus control={scope.control} name="title" />
@@ -175,9 +178,6 @@ export const NoteEditor = ({
                 return children;
               }}
             />
-          </div>
-          <div className="flex-1 min-w-0">
-            <GumnutStatus />
           </div>
           <Button
             onClick={handleSave}
