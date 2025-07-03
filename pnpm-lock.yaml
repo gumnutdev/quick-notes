@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@gumnutdev/react':
-        specifier: ^0.4.6
-        version: 0.4.6(react@19.1.0)
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.10.0(react-hook-form@7.58.1(react@19.1.0))
@@ -612,14 +609,6 @@ packages:
 
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
-
-  '@gumnutdev/api@0.4.6':
-    resolution: {integrity: sha512-MomO2oQw08o2sBfwZ0e0+gFSaiFcmP7/BFjsmuWFu0CtKgP5CTud0Gn3HeOt+MKtPreXai4can+yUekHlsKNGg==}
-
-  '@gumnutdev/react@0.4.6':
-    resolution: {integrity: sha512-hjeUfRCdhQXS3mUBnuzNF1bZ3CiJfi1RtQRtDdONP9/eXTDxHscqlBnKUlkka2LiU3E5zOUjc4NBdBBH8+Zh5g==}
-    peerDependencies:
-      react: ^19.0.0
 
   '@hookform/resolvers@3.10.0':
     resolution: {integrity: sha512-79Dv+3mDF7i+2ajj7SkypSKHhl1cbln1OGavqrsF7p6mbUv11xpqpacPsGDCTRvCSjEEIez2ef1NveSVL3b0Ag==}
@@ -3525,13 +3514,6 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
 
   '@floating-ui/utils@0.2.9': {}
-
-  '@gumnutdev/api@0.4.6': {}
-
-  '@gumnutdev/react@0.4.6(react@19.1.0)':
-    dependencies:
-      '@gumnutdev/api': 0.4.6
-      react: 19.1.0
 
   '@hookform/resolvers@3.10.0(react-hook-form@7.58.1(react@19.1.0))':
     dependencies:
