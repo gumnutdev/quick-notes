@@ -1,8 +1,24 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
+import { configureGumnut } from "@gumnutdev/react";
+
+const GUMNUT_ON = false;
+
+function GumnutProvider({ children }: { children: React.ReactNode }) {
+  if (GUMNUT_ON) {
+    useEffect(() => {
+      configureGumnut({
+        localDevKey: "your-key-here",
+        projectId: "your-project-id-here",
+      });
+    }, []);
+  }
+
+  return <>{children}</>;
+}
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -21,6 +37,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <GumnutProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </GumnutProvider>
   );
 }
