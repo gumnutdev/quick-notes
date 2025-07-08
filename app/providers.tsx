@@ -3,7 +3,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import React from "react";
-import { configureGumnut } from "@gumnutdev/react";
 
 const GUMNUT_ON = false;
 
