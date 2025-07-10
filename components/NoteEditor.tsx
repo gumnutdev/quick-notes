@@ -97,7 +97,7 @@ export const NoteEditor = ({
       };
       setLocalNote(updatedNote);
       setHasUnsavedChanges(true);
-//      onNoteUpdate(updatedNote);
+      //      onNoteUpdate(updatedNote);
     });
   };
 
@@ -157,6 +157,8 @@ export const NoteEditor = ({
               name="title"
               defaultValue={localNote.title}
               placeholder="Note title..."
+              wrap
+              resize="auto"
               style={{
                 fontSize: "1.5rem",
                 fontWeight: "bold",
@@ -249,7 +251,10 @@ export const NoteEditor = ({
         </div>
 
         {/* Note Properties - Mobile: below content, Desktop: sidebar */}
-        <div className="w-full md:w-80 bg-slate-800/30 border-t md:border-t-0 md:border-l border-slate-700/50 p-6 overflow-y-auto space-y-6">
+        <div
+          className="w-full md:w-80 bg-slate-800/30 border-t md:border-t-0 md:border-l border-slate-700/50 p-6 overflow-y-auto space-y-6"
+          style={{ order: -100 }}
+        >
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">
               Note Properties
